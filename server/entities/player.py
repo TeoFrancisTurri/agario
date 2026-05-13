@@ -1,0 +1,65 @@
+from shared.message_fields import (
+    ID,
+    USERNAME,
+    X,
+    Y,
+    RADIUS,
+    DIRECTION_X,
+    DIRECTION_Y,
+)
+
+from server.config.player_config import (
+    PLAYER_INITIAL_RADIUS,
+    PLAYER_MIN_SPEED,
+    PLAYER_MAX_SPEED,
+    PLAYER_SPEED_FACTOR,
+)
+
+
+class Player:
+    def __init__(self, player_id, username, x, y):
+        self.player_id = player_id
+        self.username = username
+
+        self.x = x
+        self.y = y
+
+        self.radius = PLAYER_INITIAL_RADIUS
+
+        self.direction_x = 0
+        self.direction_y = 0
+
+        self.alive = True
+
+    @property
+    def speed(self):
+        return max(
+            PLAYER_MIN_SPEED,
+            PLAYER_MAX_SPEED - self.radius * PLAYER_SPEED_FACTOR
+        )
+
+    def update_input(self, message):
+        direction_x = message.get(DIRECTION_X, 0)
+        direction_y = message.get(DIRECTION_Y, 0)
+
+        self.set_direction(direction_x, direction_y)
+
+    def set_direction(self, direction_x, direction_y):
+        self.direction_x = direction_x
+        self.direction_y = direction_y
+
+    def update(self):
+        self.x += self.direction_x * self.speed
+        self.y += self.direction_y * self.speed
+
+    def grow(self, amount):
+        self.radius += amount
+
+    def to_snapshot(self):
+        return {
+            ID: self.player_id,
+            USERNAME: self.username,
+            X: self.x,
+            Y: self.y,
+            RADIUS: self.radius,
+        }
