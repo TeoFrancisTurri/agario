@@ -4,7 +4,7 @@ import threading
 import time
 
 from server.entities.player import Player
-from server.config.player_config import PLAYER_INITIAL_RADIUS
+from server.config.player_config import PLAYER_INITIAL_MASS
 from server.config.match_config import MATCH_TICK_RATE
 from server.config.food_config import FOOD_TYPES, FOOD_INITIAL_AMOUNT, RADIUS, MASS
 from server.entities.food import Food
@@ -79,8 +79,11 @@ class Match:
 
 
     def add_player(self, username):
-        
-        x, y = self.get_random_spawn(PLAYER_INITIAL_RADIUS)
+        initial_radius = Player.calculate_radius_from_mass(
+            PLAYER_INITIAL_MASS
+        )
+
+        x, y = self.get_random_spawn(initial_radius)
         color = random.choice(ENTITIES_COLORS)
 
         player = Player(
@@ -122,7 +125,7 @@ class Match:
         with self.lock:
             for player in self.players.values():
                 player.update()
-                self.clamp_player(player)
+                self.keep_inside_map(player)
 
     def send_snapshot(self):
         with self.lock:
@@ -138,16 +141,10 @@ class Match:
         for client_handler in client_handlers:
             client_handler.send(message)
 
-    def clamp_player(self, player):
-        player.x = max(
-            player.radius,
-            min(MAP_WIDTH - player.radius, player.x)
-        )
+    def keep_inside_map(self, player):
+        player.x = max(0, min(player.x, MAP_WIDTH))
+        player.y = max(0, min(player.y, MAP_HEIGHT))
 
-        player.y = max(
-            player.radius,
-            min(MAP_HEIGHT - player.radius, player.y)
-        )
     def generate_snapshot(self):
         return {
             "players": [

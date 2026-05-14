@@ -5,7 +5,7 @@ from client.managers.snapshot_manager import SnapshotManager
 
 from shared.config.world_config import MAP_WIDTH, MAP_HEIGHT
 from shared.protocol.message_types import PLAYER_INPUT
-from client.config.map_config import GRID_COLOR, GRID_SIZE
+from client.config.map_config import GRID_COLOR, GRID_SIZE, MAP_CLIP_EXTRA
 
 from shared.protocol.message_fields import TYPE
 
@@ -53,17 +53,33 @@ class PlayingState(ClientState):
             return
 
         players = snapshot.get(PLAYERS, [])
-        local_player = None
+        players = sorted(
+            players,
+            key=lambda player: player[RADIUS]
+        )
+        local_player = self.find_local_player(players)
+
+        if local_player is None:
+            return
 
         # Actualizar cámara siguiendo al jugador local
-        for player in players:
-            if player[ID] == self.player_id:
-                local_player = player
-                self.game.camera.update(
-                    player[X],
-                    player[Y]
-                )
-                break
+        self.game.camera.update(
+            local_player[X],
+            local_player[Y]
+        )
+      
+            
+        #dibujado del bordes del mapa, ya que se cortaban
+        map_x, map_y = self.game.camera.apply(0, 0)
+
+        map_rect = pygame.Rect(
+            int(map_x) - MAP_CLIP_EXTRA,
+            int(map_y) - MAP_CLIP_EXTRA,
+            MAP_WIDTH + MAP_CLIP_EXTRA * 2,
+            MAP_HEIGHT + MAP_CLIP_EXTRA * 2
+        )
+
+        self.screen.set_clip(map_rect)
 
         self.draw_grid()
         
@@ -111,9 +127,18 @@ class PlayingState(ClientState):
         foods = snapshot.get(FOODS, [])
         self.draw_foods(foods, self.game.camera.x, self.game.camera.y)
 
+        self.screen.set_clip(None)
+
         if local_player is not None:
             self.draw_score(local_player)
             self.draw_leaderboard(players, local_player)
+
+    def find_local_player(self, players):
+        for player in players:
+            if player[ID] == self.player_id:
+                return player
+
+        return None
 
     def get_mouse_direction(self):
         mouse_x, mouse_y = pygame.mouse.get_pos()

@@ -21,7 +21,6 @@ from server.config.player_config import (
 	PLAYER_MAX_SPEED,
 	PLAYER_SPEED_FACTOR,
 	PLAYER_INITIAL_MASS,
-	PLAYER_INITIAL_RADIUS
 )
 
 
@@ -36,7 +35,7 @@ class Player:
 		self.y = y
 		self.color = color
 		self.mass = PLAYER_INITIAL_MASS
-		self.radius = PLAYER_INITIAL_RADIUS
+		self.radius = Player.calculate_radius_from_mass(self.mass)
 		self.direction_x = 0
 		self.direction_y = 0
 
@@ -64,12 +63,15 @@ class Player:
 		self.x += self.direction_x * self.speed
 		self.y += self.direction_y * self.speed
 
-	def calculate_radius_from_mass(self):
-		return int(math.sqrt(self.mass) * 4)
+	@staticmethod
+	def calculate_radius_from_mass(mass):
+		if not mass or mass <= 0:
+			return 0
+		return int(math.sqrt(mass) * 4)
 	
 	def eat(self, food):
 		self.mass += food.mass
-		self.radius = self.calculate_radius_from_mass()
+		self.radius = self.calculate_radius_from_mass(self.mass)
 
 	def to_snapshot(self):
 		return {

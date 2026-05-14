@@ -59,7 +59,6 @@ class ClientHandler:
 
         try:
             data = (json.dumps(message) + "\n").encode(ENCODING)
-            print(data)
             self.client_socket.sendall(data)
 
         except OSError as error:
