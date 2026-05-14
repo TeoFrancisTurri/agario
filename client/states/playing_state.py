@@ -33,7 +33,7 @@ class PlayingState(ClientState):
         self.player_id = player_id
         self.mass_font = pygame.font.SysFont(None, 32)
         self.leaderboard_font = pygame.font.SysFont(None, 26)
-        self.username_font = pygame.font.SysFont(None, 24)
+        self.username_font = pygame.font.SysFont(None, 16)
 
     def update(self, dt):
         direction_x, direction_y = self.get_mouse_direction()
@@ -100,6 +100,12 @@ class PlayingState(ClientState):
                 color,
                 (x, y),
                 radius - 3,
+            )
+
+            self.draw_username(
+                player[USERNAME],
+                x,
+                y
             )
         
         foods = snapshot.get(FOODS, [])
@@ -254,3 +260,15 @@ class PlayingState(ClientState):
                     y + 45 + index * line_height
                 )
             )
+
+    def draw_username(self, username, x, y):
+        text = self.username_font.render(
+            username,
+            True,
+            (255, 255, 255)
+        )
+
+        text_x = x - text.get_width() // 2
+        text_y = y - text.get_height() // 2
+
+        self.screen.blit(text, (text_x, text_y))

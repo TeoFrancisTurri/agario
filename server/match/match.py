@@ -134,7 +134,7 @@ class Match:
             TICK: self.tick,
             SNAPSHOT: snapshot,
         }
-        print(message)
+       
         for client_handler in client_handlers:
             client_handler.send(message)
 
@@ -170,11 +170,16 @@ class Match:
 
 
     def add_food(self):
-        x = random.randint(0, self.map_width)
-        y = random.randint(0, self.map_height)
-
         food_type = random.choice(FOOD_TYPES)
+
+        radius = food_type[RADIUS]
+        mass = food_type[MASS]
+
+        x = random.randint(radius, self.map_width - radius)
+        y = random.randint(radius, self.map_height - radius)
+
         color = random.choice(ENTITIES_COLORS)
+
         food = Food(
             food_id=self.next_food_id,
             x=x,
