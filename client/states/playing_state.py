@@ -3,6 +3,7 @@ import pygame
 from client.states.client_state import ClientState
 from client.managers.snapshot_manager import SnapshotManager
 
+from shared.config.world_config import MAP_WIDTH, MAP_HEIGHT
 from shared.protocol.message_types import PLAYER_INPUT
 
 from shared.protocol.message_fields import TYPE
@@ -18,6 +19,7 @@ from shared.protocol.snapshot_fields import (
     X,
     Y,
     RADIUS,
+    ID
 )
 
 
@@ -45,9 +47,28 @@ class PlayingState(ClientState):
 
         players = snapshot.get(PLAYERS, [])
 
+        # Actualizar cámara siguiendo al jugador local
         for player in players:
-            x = int(player[X])
-            y = int(player[Y])
+            if player[ID] == self.player_id:
+                self.game.camera.update(
+                    player[X],
+                    player[Y]
+                )
+                break
+
+        self.draw_grid()
+
+        for player in players:
+            world_x = player[X]
+            world_y = player[Y]
+
+            screen_x, screen_y = self.game.camera.apply(
+                world_x,
+                world_y
+            )
+
+            x = int(screen_x)
+            y = int(screen_y)
 
             radius = int(player[RADIUS])
             color = tuple(player[COLOR])
@@ -57,6 +78,7 @@ class PlayingState(ClientState):
                 max(0, color[1] - 40),
                 max(0, color[2] - 40),
             )
+
             pygame.draw.circle(
                 self.screen,
                 border_color,
@@ -87,3 +109,42 @@ class PlayingState(ClientState):
             direction = direction.normalize()
 
         return direction
+    
+    def draw_grid(self):
+        grid_size = 50
+        grid_color = (210, 210, 210)
+
+        camera_x = int(self.game.camera.x)
+        camera_y = int(self.game.camera.y)
+
+        screen_width = self.screen.get_width()
+        screen_height = self.screen.get_height()
+
+        visible_start_x = max(0, camera_x)
+        visible_end_x = min(MAP_WIDTH, camera_x + screen_width)
+
+        visible_start_y = max(0, camera_y)
+        visible_end_y = min(MAP_HEIGHT, camera_y + screen_height)
+
+        first_grid_x = (visible_start_x // grid_size) * grid_size
+        first_grid_y = (visible_start_y // grid_size) * grid_size
+
+        for world_x in range(first_grid_x, visible_end_x + 1, grid_size):
+            screen_x = world_x - camera_x
+
+            pygame.draw.line(
+                self.screen,
+                grid_color,
+                (screen_x, visible_start_y - camera_y),
+                (screen_x, visible_end_y - camera_y),
+            )
+
+        for world_y in range(first_grid_y, visible_end_y + 1, grid_size):
+            screen_y = world_y - camera_y
+
+            pygame.draw.line(
+                self.screen,
+                grid_color,
+                (visible_start_x - camera_x, screen_y),
+                (visible_end_x - camera_x, screen_y),
+            )

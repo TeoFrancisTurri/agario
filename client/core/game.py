@@ -6,6 +6,7 @@ from client.config.client_settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, WIND
 from client.config.colors import GRID_COLOR
 from client.states.main_menu_state import MainMenuState
 from client.network.client import Client
+from client.camera.camera import Camera
 from client.managers.snapshot_manager import SnapshotManager
 
 class Game:
@@ -22,7 +23,7 @@ class Game:
         self.running = True
 
         pygame.key.set_repeat(400, 40)
-
+        self.camera = Camera(SCREEN_WIDTH,SCREEN_HEIGHT)
         self.event_queue = Queue()
         self.snapshot_manager = SnapshotManager()
 

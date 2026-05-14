@@ -5,6 +5,7 @@ import time
 
 from server.entities.player import Player
 from server.config.player_config import PLAYER_INITIAL_RADIUS
+from shared.config.world_config import MAP_HEIGHT, MAP_WIDTH
 
 from shared.config.colors import PLAYER_COLORS
 from shared.protocol.message_types import MATCH_FOUND, GAME_STATE
@@ -115,6 +116,7 @@ class Match:
         with self.lock:
             for player in self.players.values():
                 player.update()
+                self.clamp_player(player)
 
     def send_snapshot(self):
         with self.lock:
@@ -130,6 +132,16 @@ class Match:
         for client_handler in client_handlers:
             client_handler.send(message)
 
+    def clamp_player(self, player):
+        player.x = max(
+            player.radius,
+            min(MAP_WIDTH - player.radius, player.x)
+        )
+
+        player.y = max(
+            player.radius,
+            min(MAP_HEIGHT - player.radius, player.y)
+        )
     def get_snapshot(self):
         return {
             "players": [
