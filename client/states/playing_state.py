@@ -19,7 +19,8 @@ from shared.protocol.snapshot_fields import (
     X,
     Y,
     RADIUS,
-    ID
+    ID,
+    MASS
 )
 
 
@@ -27,6 +28,7 @@ class PlayingState(ClientState):
     def __init__(self, game, player_id):
         super().__init__(game)
         self.player_id = player_id
+        self.hud_font = pygame.font.SysFont(None, 32)
 
     def update(self, dt):
         direction_x, direction_y = self.get_mouse_direction()
@@ -46,10 +48,12 @@ class PlayingState(ClientState):
             return
 
         players = snapshot.get(PLAYERS, [])
+        local_player = None
 
         # Actualizar cámara siguiendo al jugador local
         for player in players:
             if player[ID] == self.player_id:
+                local_player = player
                 self.game.camera.update(
                     player[X],
                     player[Y]
@@ -57,7 +61,7 @@ class PlayingState(ClientState):
                 break
 
         self.draw_grid()
-
+        
         for player in players:
             world_x = player[X]
             world_y = player[Y]
@@ -92,6 +96,9 @@ class PlayingState(ClientState):
                 (x, y),
                 radius - 3,
             )
+
+        if local_player is not None:
+            self.draw_mass(local_player)
 
     def get_mouse_direction(self):
         mouse_x, mouse_y = pygame.mouse.get_pos()
@@ -148,3 +155,17 @@ class PlayingState(ClientState):
                 (visible_start_x - camera_x, screen_y),
                 (visible_end_x - camera_x, screen_y),
             )
+
+    def draw_mass(self, player):
+        mass = int(player.get(MASS, 0))
+
+        text = self.hud_font.render(
+            f"Mass: {mass}",
+            True,
+            (40, 40, 40)
+        )
+
+        x = 20
+        y = self.screen.get_height() - text.get_height() - 20
+
+        self.screen.blit(text, (x, y))

@@ -4,7 +4,7 @@ import threading
 import time
 
 from server.entities.player import Player
-from server.config.player_config import PLAYER_INITIAL_RADIUS
+from server.config.player_config import PLAYER_INITIAL_MASS, PLAYER_INITIAL_RADIUS
 from shared.config.world_config import MAP_HEIGHT, MAP_WIDTH
 
 from shared.config.colors import PLAYER_COLORS
@@ -73,7 +73,9 @@ class Match:
             (player_id - 1) % len(PLAYER_COLORS)
         ]
 
+
     def add_player(self, username):
+        
         x, y = self.get_random_spawn(PLAYER_INITIAL_RADIUS)
         color = self.get_player_color(self.next_player_id)
 

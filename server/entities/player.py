@@ -1,3 +1,5 @@
+import math
+
 from shared.protocol.snapshot_fields import (
     COLOR,
     ID,
@@ -5,6 +7,7 @@ from shared.protocol.snapshot_fields import (
     X,
     Y,
     RADIUS,
+    MASS
 )
 
 from shared.protocol.input_fields import (
@@ -14,10 +17,11 @@ from shared.protocol.input_fields import (
 
 
 from server.config.player_config import (
-    PLAYER_INITIAL_RADIUS,
     PLAYER_MIN_SPEED,
     PLAYER_MAX_SPEED,
     PLAYER_SPEED_FACTOR,
+    PLAYER_INITIAL_MASS,
+    PLAYER_INITIAL_RADIUS
 )
 
 
@@ -31,12 +35,15 @@ class Player:
         self.x = x
         self.y = y
         self.color = color
+        self.mass = PLAYER_INITIAL_MASS
         self.radius = PLAYER_INITIAL_RADIUS
-
         self.direction_x = 0
         self.direction_y = 0
 
         self.alive = True
+
+    def calculate_radius_from_mass(self):
+        return math.sqrt(self.mass)
 
     @property
     def speed(self):
@@ -70,4 +77,20 @@ class Player:
             Y: self.y,
             RADIUS: self.radius,
             COLOR: self.color,
+            MASS: self.mass
         }
+    
+
+    def calculate_radius(self):
+        return math.sqrt(self.mass)
+
+    def update_radius(self):
+        self.radius = self.calculate_radius()
+
+    def add_mass(self, amount):
+        self.mass += amount
+        self.update_radius()
+
+    def remove_mass(self, amount):
+        self.mass = max(1, self.mass - amount)
+        self.update_radius()

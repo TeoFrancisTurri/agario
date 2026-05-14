@@ -23,7 +23,7 @@ class Game:
         self.running = True
 
         pygame.key.set_repeat(400, 40)
-        self.camera = Camera(SCREEN_WIDTH,SCREEN_HEIGHT)
+        self.camera = Camera(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.event_queue = Queue()
         self.snapshot_manager = SnapshotManager()
 
