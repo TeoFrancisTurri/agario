@@ -39,9 +39,17 @@ El servidor escucha en `127.0.0.1:5000` por defecto.
 Los ejecutables pre-compilados para Linux, Windows y macOS están disponibles en la sección [Releases](../../releases) del repositorio. No requieren tener Python instalado.
 
 Para compilar el ejecutable localmente:
+
+**Linux / macOS:**
 ```bash
 source venv/bin/activate
 pyinstaller client.spec --distpath dist --workpath build/pyinstaller
+```
+
+**Windows:**
+```bat
+venv\Scripts\activate
+pyinstaller client.spec --distpath dist --workpath build\pyinstaller
 ```
 
 ## Controles
