@@ -152,7 +152,7 @@ Cada jugador puede tener múltiples células (tras hacer split). Cada célula es
 }
 ```
 
-La comida ejectada (`W`) tiene velocidad inicial y se mueve hasta detenerse. Es funcionalmente idéntica a la comida normal para el cliente.
+La masa ejectada (`W`) tiene velocidad inicial y se mueve hasta detenerse. Es funcionalmente idéntica a la comida normal para el cliente.
 
 ### Virus (`viruses`)
 
@@ -172,7 +172,7 @@ Lista de los 5 jugadores con más masa, ordenados de mayor a menor. Incluye al j
 
 ```json
 [
-  { "id": 1, "username": "Alpha", "position": 1 },
+  { "id": 1, "username": "Jorge", "position": 1 },
   { "id": 3, "username": "Teo",   "position": 2 }
 ]
 ```
