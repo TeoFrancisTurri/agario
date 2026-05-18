@@ -2,14 +2,21 @@
 
 Clon del juego [agar.io](https://agar.io) desarrollado en Python con pygame. Arquitectura cliente-servidor: el servidor maneja toda la lógica del juego y el cliente se encarga exclusivamente del renderizado y la entrada del usuario.
 
-## Requisitos
+## Instalación (desarrolladores)
 
-- Python 3.12+
-- pygame 2.6.1
-
+**Linux / macOS:**
 ```bash
-pip install pygame
+./setup.sh
+source venv/bin/activate
 ```
+
+**Windows:**
+```bat
+setup.bat
+venv\Scripts\activate
+```
+
+Los scripts crean el entorno virtual e instalan las dependencias automáticamente.
 
 ## Cómo correr
 
@@ -25,7 +32,17 @@ python -m server.main
 python -m client.main
 ```
 
-El servidor escucha en `127.0.0.1:5000` por defecto. Se pueden conectar múltiples clientes.
+El servidor escucha en `127.0.0.1:5000` por defecto.
+
+## Ejecutable
+
+Los ejecutables pre-compilados para Linux, Windows y macOS están disponibles en la sección [Releases](../../releases) del repositorio. No requieren tener Python instalado.
+
+Para compilar el ejecutable localmente:
+```bash
+source venv/bin/activate
+pyinstaller client.spec --distpath dist --workpath build/pyinstaller
+```
 
 ## Controles
 
@@ -42,9 +59,9 @@ El servidor escucha en `127.0.0.1:5000` por defecto. Se pueden conectar múltipl
 - **Comer jugador:** una célula puede comer a otra si tiene al menos 1.3× su masa.
 - **Split:** divide cada célula en dos. Máximo 16 células simultáneas.
 - **Eject:** lanza una pequeña porción de masa hacia el cursor. Puede alimentar virus.
-- **Virus:** al comerlo, la célula explota en múltiples fragmentos. Se alimentan con masa ejectada y se replican al alcanzar cierta masa.
+- **Virus:** al comerlo, la célula explota en múltiples fragmentos. Se alimentan con masa ejectada y se replican al alcanzar cierta masa. Máximo 20 virus simultáneos en el mapa.
 - **Fusión:** las células divididas se fusionan automáticamente después de un tiempo.
-- **Zoom:** la cámara se aleja al dividirse en más células y vuelve al fusionarse.
+- **Zoom:** la cámara se aleja progresivamente al ganar masa y al dividirse. Se adapta automáticamente a cualquier resolución de pantalla.
 
 ## Estructura del proyecto
 
@@ -52,7 +69,8 @@ El servidor escucha en `127.0.0.1:5000` por defecto. Se pueden conectar múltipl
 agario/
 ├── client/
 │   ├── camera/         # Lógica de cámara y zoom
-│   ├── config/         # Configuración del cliente (red, UI, cámara)
+│   ├── config/         # Configuración del cliente (UI, cámara, mapa)
+│   │   └── ui/         # Configuración por estado de UI (leaderboard, playing, etc.)
 │   ├── core/           # Game loop principal
 │   ├── managers/       # SnapshotManager
 │   ├── network/        # Conexión TCP y mensajes al servidor
@@ -73,9 +91,18 @@ agario/
 │   ├── config/         # Configuración compartida (mapa, red)
 │   └── protocol/       # Tipos de mensajes y campos del protocolo
 │
-└── docs/
-    ├── README.md
-    └── PROTOCOL.md
+├── .github/
+│   └── workflows/
+│       └── build-client.yml  # Build automático de ejecutables por plataforma
+│
+├── docs/
+│   ├── README.md
+│   └── PROTOCOL.md
+│
+├── client.spec         # Configuración de PyInstaller
+├── requirements.txt    # Dependencias del cliente
+├── setup.sh            # Setup para Linux / macOS
+└── setup.bat           # Setup para Windows
 ```
 
 ## Arquitectura

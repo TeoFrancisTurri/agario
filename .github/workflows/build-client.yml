@@ -1,0 +1,54 @@
+name: Build Client
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            artifact: agario-client-linux
+          - os: windows-latest
+            artifact: agario-client-windows.exe
+          - os: macos-latest
+            artifact: agario-client-macos
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Build
+        run: pyinstaller client.spec --distpath dist --workpath build/pyinstaller
+
+      - name: Rename output (Linux / macOS)
+        if: runner.os != 'Windows'
+        run: mv dist/agario-client dist/${{ matrix.artifact }}
+
+      - name: Rename output (Windows)
+        if: runner.os == 'Windows'
+        run: mv dist/agario-client.exe dist/${{ matrix.artifact }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist/${{ matrix.artifact }}
+
+      - name: Attach to release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/${{ matrix.artifact }}
