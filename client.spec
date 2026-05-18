@@ -21,7 +21,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='agario-client',
+    name='mitosis',
     debug=False,
     strip=False,
     upx=False,

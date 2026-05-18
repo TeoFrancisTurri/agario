@@ -1,6 +1,6 @@
-# Agario Clone
+# Mitosis
 
-Clon del juego [agar.io](https://agar.io) desarrollado en Python con pygame. Arquitectura cliente-servidor: el servidor maneja toda la lógica del juego y el cliente se encarga exclusivamente del renderizado y la entrada del usuario.
+Juego desarrollado en Python con pygame, inspirado en [agar.io](https://agar.io). Arquitectura cliente-servidor: el servidor maneja toda la lógica del juego y el cliente se encarga exclusivamente del renderizado y la entrada del usuario.
 
 ## Instalación (desarrolladores)
 

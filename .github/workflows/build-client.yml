@@ -15,11 +15,11 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            artifact: agario-client-linux
+            artifact: mitosis-linux
           - os: windows-latest
-            artifact: agario-client-windows.exe
+            artifact: mitosis-windows.exe
           - os: macos-latest
-            artifact: agario-client-macos
+            artifact: mitosis-macos
 
     runs-on: ${{ matrix.os }}
 
@@ -38,11 +38,11 @@ jobs:
 
       - name: Rename output (Linux / macOS)
         if: runner.os != 'Windows'
-        run: mv dist/agario-client dist/${{ matrix.artifact }}
+        run: mv dist/mitosis dist/${{ matrix.artifact }}
 
       - name: Rename output (Windows)
         if: runner.os == 'Windows'
-        run: mv dist/agario-client.exe dist/${{ matrix.artifact }}
+        run: mv dist/mitosis.exe dist/${{ matrix.artifact }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

@@ -1,5 +1,5 @@
 FPS = 30
 
-WINDOW_TITLE = "Mini Agar.io"
+WINDOW_TITLE = "Mitosis"
 
 DEFAULT_USERNAME = "DUMB CELL"
